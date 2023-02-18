@@ -8,16 +8,17 @@ import datetime
 import requests
 import string
 import random
-import base64
 import time
 import json
 import os
+
+print("Script coded by ALILAPRO\nModified by AldenizenMC\n\n")
 
 ############# IMPORTANT #############
 
 load_dotenv()
 thread_id = 1
-referrer_url = "https://api.github.com/repos/AldenALT/warp-worker/contents/config/REFERRAL.txt"
+referrer_url = "https://raw.githubusercontent.com/AldenizenMC/warp-plus/main/config/REFERRAL.txt"
 referrer = ""
 thread = MongoClient(os.environ['MONGODB'])["test"]["Thread"]
 
@@ -26,11 +27,10 @@ thread = MongoClient(os.environ['MONGODB'])["test"]["Thread"]
 if len(referrer_url) > 0:
     print("referrer url not empty, creating request to url...")
     req = requests.get(referrer_url)
-    if (req.status.code == requests.codes.ok):
-        print("connection successful, decoding content...")
-        req = req.json
-        referrer = base64.b64decode(req['content'])
-        print(f"content decoded: \"{referrer}\"")
+    if (req.status_code == 200):
+        print("connection successful, reading content...")
+        referrer = req.text
+        print(f"content read: \"{referrer}\"")
     else:
         print(f"connection failed, using default value: \"{referrer}\"")
 else:
@@ -46,9 +46,8 @@ def index():
     return f"<pre>Thread ID : {thread_id}<br>Good      : {good}<br>Bad       : {bad}<br>Total     : {good+bad}</pre>"
 
 
+print("\n\n")
 Thread(target=app.run, args=("0.0.0.0", 8080)).start()
-
-print("Script coded by ALILAPRO\nModified by AldenizenMC")
 
 
 def genString(stringLength):
@@ -149,7 +148,7 @@ while True:
         good = good + 1
         cls()
         print(
-            f"thread: {thread_id}\nreferrer: {referrer} (last 5 digit)")
+            f"thread: {thread_id}\nreferrer: {referrer}")
         print(f"code: {result} | good. sleeping for 18 seconds")
         print(f"{good+bad} total | {good} good | {bad} bad")
         incrementGood()
@@ -158,7 +157,7 @@ while True:
         bad = bad + 1
         cls()
         print(
-            f"thread: {thread_id}\nreferrer: {referrer} (last 5 digit)")
+            f"thread: {thread_id}\nreferrer: {referrer}")
         print(f"code: {result} | rate limit. sleeping for 18 seconds")
         print(f"{good+bad} total | {good} good | {bad} bad")
         incrementBad()
@@ -167,7 +166,7 @@ while True:
         bad = bad + 1
         cls()
         print(
-            f"thread: {thread_id}\nreferrer: {referrer} (last 5 digit)")
+            f"thread: {thread_id}\nreferrer: {referrer}")
         print(f"code: {result} | retrying...")
         print(f"{good+bad} total | {good} good | {bad} bad")
         incrementBad()
