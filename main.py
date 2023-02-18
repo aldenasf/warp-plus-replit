@@ -33,8 +33,7 @@ def index():
 
 Thread(target=app.run, args=("0.0.0.0", 8080)).start()
 
-print("Script coded by ALILAPRO")
-print("Modified by AldenizenMC")
+print("Script coded by ALILAPRO\nModified by AldenizenMC")
 
 
 def genString(stringLength):
@@ -54,13 +53,18 @@ def digitString(stringLength):
 
 
 def createObjIfNotExist():
+    print("checking if object exists...")
     object = thread.find_one({"Thread": thread_number})
     if (object == None):
+        print("object not found, creating one...")
         thread.insert_one({
             "Thread": thread_number,
             "good": 0,
             "bad": 0,
         })
+        print("object created!")
+    else:
+        print("object exists!")
 
 
 def incrementGood():
@@ -106,7 +110,9 @@ def run():
             'Accept-Encoding': 'gzip',
             'User-Agent': 'okhttp/3.12.1'
         }
+        print("creating request...")
         req = urllib.request.Request(url, data, headers)
+        print("opening request...")
         response = urllib.request.urlopen(req)
         status_code = response.getcode()
         return status_code
@@ -119,14 +125,17 @@ bad = 0
 
 createObjIfNotExist()
 
+print("executing while loop...")
+
 while True:
+    print("executing run()")
     result = run()
     if result == 200:
         good = good + 1
         cls()
         print(
-            f"thread: {thread_number}\nreferrer: {referrer[-5:]} (last 5 digit)")
-        print(f"code: {result}")
+            f"thread: {thread_number}\nreferrer: {referrer} (last 5 digit)")
+        print(f"code: {result} | good. sleeping for 18 seconds")
         print(f"{good+bad} total | {good} good | {bad} bad")
         incrementGood()
         time.sleep(18)
@@ -134,8 +143,8 @@ while True:
         bad = bad + 1
         cls()
         print(
-            f"thread: {thread_number}\nreferrer: {referrer[-5:]} (last 5 digit)")
-        print(f"code: {result} | rate limit. running code in 18 seconds")
+            f"thread: {thread_number}\nreferrer: {referrer} (last 5 digit)")
+        print(f"code: {result} | rate limit. sleeping for 18 seconds")
         print(f"{good+bad} total | {good} good | {bad} bad")
         incrementBad()
         time.sleep(18)
@@ -143,7 +152,7 @@ while True:
         bad = bad + 1
         cls()
         print(
-            f"thread: {thread_number}\nreferrer: {referrer[-5:]} (last 5 digit)")
-        print(f"code: {result}")
+            f"thread: {thread_number}\nreferrer: {referrer} (last 5 digit)")
+        print(f"code: {result} | retrying...")
         print(f"{good+bad} total | {good} good | {bad} bad")
         incrementBad()
