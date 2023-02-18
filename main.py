@@ -5,8 +5,10 @@ from flask import Flask
 import urllib.request
 import urllib.error
 import datetime
+import requests
 import string
 import random
+import base64
 import time
 import json
 import os
@@ -14,12 +16,25 @@ import os
 ############# IMPORTANT #############
 
 load_dotenv()
-thread_number = 1
-referrer = os.environ['ID']
+thread_id = 1
+referrer_url = "https://api.github.com/repos/AldenALT/warp-worker/contents/config/REFERRAL.txt"
+referrer = ""
 thread = MongoClient(os.environ['MONGODB'])["test"]["Thread"]
 
 ############# IMPORTANT #############
 
+if len(referrer_url) > 0:
+    print("referrer url not empty, creating request to url...")
+    req = requests.get(referrer_url)
+    if (req.status.code == requests.codes.ok):
+        print("connection successful, decoding content...")
+        req = req.json
+        referrer = base64.b64decode(req['content'])
+        print(f"content decoded: \"{referrer}\"")
+    else:
+        print(f"connection failed, using default value: \"{referrer}\"")
+else:
+    print(f"referrer url is empty, using default value: \"{referrer}\"")
 
 # time_start = int(str(datetime.datetime.now().timestamp())[:10])
 
@@ -28,7 +43,7 @@ app = Flask("")
 
 @app.route("/")
 def index():
-    return f"<pre>Thread ID: {thread_number}<br>Good: {good}<br>Bad: {bad}<br>Total: {good+bad}</pre>"
+    return f"<pre>Thread ID : {thread_id}<br>Good      : {good}<br>Bad       : {bad}<br>Total     : {good+bad}</pre>"
 
 
 Thread(target=app.run, args=("0.0.0.0", 8080)).start()
@@ -54,11 +69,11 @@ def digitString(stringLength):
 
 def createObjIfNotExist():
     print("checking if object exists...")
-    object = thread.find_one({"Thread": thread_number})
+    object = thread.find_one({"Thread": thread_id})
     if (object == None):
         print("object not found, creating one...")
         thread.insert_one({
-            "Thread": thread_number,
+            "Thread": thread_id,
             "good": 0,
             "bad": 0,
         })
@@ -69,14 +84,14 @@ def createObjIfNotExist():
 
 def incrementGood():
     object = thread.find_one_and_update(
-        {"Thread": thread_number},
+        {"Thread": thread_id},
         {"$inc": {"good": 1}}
     )
 
 
 def incrementBad():
     object = thread.find_one_and_update(
-        {"Thread": thread_number},
+        {"Thread": thread_id},
         {"$inc": {"bad": 1}}
     )
 
@@ -134,7 +149,7 @@ while True:
         good = good + 1
         cls()
         print(
-            f"thread: {thread_number}\nreferrer: {referrer} (last 5 digit)")
+            f"thread: {thread_id}\nreferrer: {referrer} (last 5 digit)")
         print(f"code: {result} | good. sleeping for 18 seconds")
         print(f"{good+bad} total | {good} good | {bad} bad")
         incrementGood()
@@ -143,7 +158,7 @@ while True:
         bad = bad + 1
         cls()
         print(
-            f"thread: {thread_number}\nreferrer: {referrer} (last 5 digit)")
+            f"thread: {thread_id}\nreferrer: {referrer} (last 5 digit)")
         print(f"code: {result} | rate limit. sleeping for 18 seconds")
         print(f"{good+bad} total | {good} good | {bad} bad")
         incrementBad()
@@ -152,7 +167,7 @@ while True:
         bad = bad + 1
         cls()
         print(
-            f"thread: {thread_number}\nreferrer: {referrer} (last 5 digit)")
+            f"thread: {thread_id}\nreferrer: {referrer} (last 5 digit)")
         print(f"code: {result} | retrying...")
         print(f"{good+bad} total | {good} good | {bad} bad")
         incrementBad()
