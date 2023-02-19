@@ -1,6 +1,7 @@
 from pymongo import MongoClient
 from dotenv import load_dotenv
 from threading import Thread
+from flask_cors import CORS
 from flask import Flask
 import urllib.request
 import urllib.error
@@ -39,6 +40,7 @@ else:
 # time_start = int(str(datetime.datetime.now().timestamp())[:10])
 
 app = Flask("")
+cors = CORS(app)
 
 
 @app.route("/")

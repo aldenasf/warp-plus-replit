@@ -5,9 +5,11 @@ The script works by doing the referrer thing (i dont really know how it works tb
 
 You can display all the information using a table like so
 
-| Thread    | Good   | Bad    |
-| --------- | ------ | ------ |
-| Thread 1  | 23     | 17     |
-| Thread 2  | 38     | 29     |
-| Thread 3  | 12     | 37     |
-| **Total** | **73** | **83** |
+| Thread    | Good   | Bad    | Status |
+| --------- | ------ | ------ | ------ |
+| Thread 1  | 23     | 17     | 🟢 200 |
+| Thread 2  | 38     | 29     | 🟢 200 |
+| Thread 3  | 12     | 37     | 🟢 200 |
+| Thread 4  | 24     | 15     | 🔴 500 |
+| Thread 5  | 21     | 34     | 🔴 500 |
+| **Total** | **118**| **132**|        |
